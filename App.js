@@ -72,11 +72,12 @@ function getImageKey(recommendation) {
 export default function App() {
   const [screen, setScreen] = useState('home');
   const [loadingIndex, setLoadingIndex] = useState(0);
+  const [loadingProgress, setLoadingProgress] = useState(0);
   const [recommendation, setRecommendation] = useState(null);
   const [winRate, setWinRate] = useState(0);
   const [drawPattern, setDrawPattern] = useState([]);
 
-  // 로딩 화면일 때만 0.7초마다 문구가 바뀌도록 합니다.
+  // 로딩 화면일 때만 문구와 게이지가 시간에 맞춰 움직이도록 합니다.
   useEffect(() => {
     if (screen !== 'loading') {
       return undefined;
@@ -87,6 +88,13 @@ export default function App() {
         (currentIndex + 1) % loadingMessages.length
       ));
     }, 700);
+
+    const progressTimer = setInterval(() => {
+      setLoadingProgress((currentProgress) => {
+        const nextProgress = currentProgress + 2;
+        return nextProgress > 100 ? 100 : nextProgress;
+      });
+    }, 100);
 
     const resultTimer = setTimeout(() => {
       const nextRecommendation = pickRandomItem(choices);
@@ -99,18 +107,21 @@ export default function App() {
       setRecommendation(nextRecommendation);
       setWinRate(Math.floor(Math.random() * 60) + 40);
       setDrawPattern(nextPattern);
+      setLoadingProgress(100);
       setScreen('result');
     }, 5000);
 
     // 화면이 바뀌면 타이머를 정리해서 중복 실행을 막습니다.
     return () => {
       clearInterval(messageTimer);
+      clearInterval(progressTimer);
       clearTimeout(resultTimer);
     };
   }, [screen]);
 
   function startRecommendation() {
     setLoadingIndex(0);
+    setLoadingProgress(0);
     setScreen('loading');
   }
 
@@ -143,7 +154,7 @@ export default function App() {
                 {loadingMessages[loadingIndex]}
               </Text>
               <View style={styles.progressTrack}>
-                <View style={styles.progressBar} />
+                <View style={[styles.progressBar, { width: `${loadingProgress}%` }]} />
               </View>
             </View>
           )}
@@ -282,7 +293,6 @@ const styles = StyleSheet.create({
     overflow: 'hidden',
   },
   progressBar: {
-    width: '72%',
     height: '100%',
     backgroundColor: '#2F6FED',
     borderRadius: 999,
