@@ -1,6 +1,14 @@
 import { StatusBar } from 'expo-status-bar';
 import { useEffect, useState } from 'react';
-import { Image, Pressable, SafeAreaView, StyleSheet, Text, View } from 'react-native';
+import {
+  Image,
+  Pressable,
+  SafeAreaView,
+  ScrollView,
+  StyleSheet,
+  Text,
+  View,
+} from 'react-native';
 
 const choices = [
   { name: '가위', emoji: '✌️', imageKey: 'scissors' },
@@ -127,7 +135,11 @@ export default function App() {
 
   return (
     <SafeAreaView style={styles.safeArea}>
-      <View style={styles.page}>
+      <ScrollView
+        style={styles.scrollArea}
+        contentContainerStyle={styles.page}
+        showsVerticalScrollIndicator={false}
+      >
         <StatusBar style="dark" />
 
         <View style={styles.appShell}>
@@ -196,7 +208,7 @@ export default function App() {
             </>
           )}
         </View>
-      </View>
+      </ScrollView>
     </SafeAreaView>
   );
 }
@@ -206,8 +218,11 @@ const styles = StyleSheet.create({
     flex: 1,
     backgroundColor: '#F7FAFC',
   },
-  page: {
+  scrollArea: {
     flex: 1,
+  },
+  page: {
+    flexGrow: 1,
     alignItems: 'center',
     justifyContent: 'center',
     paddingHorizontal: 20,
@@ -216,7 +231,6 @@ const styles = StyleSheet.create({
   appShell: {
     width: '100%',
     maxWidth: 430,
-    minHeight: '86%',
     justifyContent: 'center',
   },
   appName: {
